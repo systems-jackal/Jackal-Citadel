@@ -1,8 +1,8 @@
 #!/bin/bash
 # ==============================================================================
 # SCRIPT NAME    : Nginx Log Parser & Behavioral Analysis Tool
-# PURPOSE        : Filter, extract, and count unique patterns/signatures from 
-#                  Nginx access logs for security behavioral analysis and threat 
+# PURPOSE        : Filter, extract, and count unique patterns/signatures from
+#                  Nginx access logs for security behavioral analysis and threat
 #                  mapping.
 # SCOPE          : Chains core Linux utilities (grep, awk, sort, tail, head, uniq)
 #                  to produce context-aware analytical output across target perimeters.
@@ -42,7 +42,7 @@
 #      custom scripts (e.g., python-requests), or malicious client infrastructure.
 #
 # 2. WHAT (Target Intent):
-#    - HTTP Method ($6) & URI Path ($7): Differentiates legitimate application 
+#    - HTTP Method ($6) & URI Path ($7): Differentiates legitimate application
 #      traffic from reconnaissance, force browsing, or credential stuffing (e.g., probing /.env).
 #
 # 3. WHAT HAPPENED (Server Reaction):
@@ -52,7 +52,7 @@
 # 4. WHEN (Temporal Patterning):
 #    - Timestamp ($4, $5): Used to construct incident chronologies, map burst activity,
 #      and correlate concurrent log entries during triage.
-# 
-# 5. Resources for setting up the Test file are in 
+#
+# 5. Resources for setting up the Test file are in [https://github.com/systems-jackal/Jackal-Citadel/blob/main/Test-Lab/access.log]
 # ------------------------------------------------------------------------------
 
