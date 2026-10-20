@@ -89,7 +89,7 @@ token = "<32-byte-random, generated via `openssl rand -base64 32`>"
 **frpc.toml — proxy role** (on kali):
 
 ```toml
-serverAddr = "162.35.122.112"
+serverAddr = "<Server-Hosting the FRPS IP Address >"
 serverPort = 7000
 transport.tls.enable = true
 auth.method = "token"
