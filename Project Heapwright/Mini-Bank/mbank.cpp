@@ -1,129 +1,63 @@
 #include <iostream>
-#include <string>
-#include <limits>
-#include <cmath>
+#include <cstring>
+#include <cstdint>
+#include <iomanip>
 
 using namespace std;
 
+// Normal banking function
+void createAccount() {
+    cout << "\n[+] Account created successfully!\n";
+}
+
+// Simulated transfer function
+void transferMoney() {
+    cout << "\n[!] TRANSFER FUNCTION EXECUTED!\n";
+    cout << "[!] Simulated transfer of 5000.\n";
+    cout << "[!] No actual money was transferred.\n";
+}
+
+struct BankSession {
+    char name[16];
+    void (*nextAction)();
+};
+
 int main() {
-    int choice;
-    string accountNumber, transferAccount;
-    double balance = 0, amount;
-    string name;
+    BankSession session{};
 
-    cout << "===== WELCOME TO MINI BANK =====" << endl;
+    session.nextAction = createAccount;
 
-    // Create Account
-    cout << "Enter your name: ";
-    getline(cin, name);
+    cout << "===== MINI BANK MEMORY LAB =====\n";
 
-    cout << "Enter account number: ";
-    cin >> accountNumber;
+    cout << "\n--- MEMORY ADDRESSES ---\n";
+    cout << "Name buffer: "
+         << static_cast<void*>(session.name) << '\n';
 
-    cout << "Enter initial deposit (Minimum 500): ";
-    cin >> amount;
+    cout << "Function pointer variable: "
+         << static_cast<void*>(&session.nextAction) << '\n';
 
-    if (!cin || !isfinite(amount) || amount < 500) {
-        cout << "Account creation failed! Minimum deposit is 500." << endl;
-        return 0;
+    cout << "Buffer size: "
+         << sizeof(session.name) << " bytes\n";
+
+    cout << "Function pointer size: "
+         << sizeof(session.nextAction) << " bytes\n";
+
+    cout << "\nEnter your name: ";
+
+    // Read at most 15 characters plus '\0'.
+    cin.getline(session.name, sizeof(session.name));
+
+    if (cin.fail()) {
+        cout << "\n[!] Input exceeded the name buffer.\n";
+        cout << "[!] C++ input handling prevented the overflow.\n";
+        return 1;
     }
 
-    balance = amount;
+    cout << "\nHello, " << session.name << '\n';
 
-    cout << "\nAccount created successfully!" << endl;
-    cout << "Welcome " << name << "!" << endl;
+    cout << "\nExecuting next action...\n";
 
-    // Banking Menu
-    while (1) {
-        cout << "\n===== MINI BANK MENU =====" << endl;
-        cout << "1. Deposit Money" << endl;
-        cout << "2. Withdraw Money" << endl;
-        cout << "3. Transfer Money" << endl;
-        cout << "4. Check Balance" << endl;
-        cout << "5. Exit" << endl;
-
-        cout << "Enter your choice: ";
-
-        if (!(cin >> choice)) {
-            cout << "Invalid input!" << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            continue;
-        }
-
-        switch (choice) {
-
-            case 1:
-                cout << "Enter amount to deposit: ";
-                if (!(cin >> amount)) {
-                    cout << "Invalid amount!" << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break;
-                }
-
-                if (isfinite(amount) && amount > 0
-                    && isfinite(balance + amount)) {
-                    balance += amount;
-                    cout << "Deposit successful!" << endl;
-                } else {
-                    cout << "Invalid amount!" << endl;
-                }
-                break;
-
-            case 2:
-                cout << "Enter amount to withdraw: ";
-                if (!(cin >> amount)) {
-                    cout << "Invalid amount!" << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break;
-                }
-
-                if (isfinite(amount) && amount > 0 && amount <= balance) {
-                    balance -= amount;
-                    cout << "Withdrawal successful!" << endl;
-                } else {
-                    cout << "Insufficient balance or invalid amount!" << endl;
-                }
-                break;
-
-            case 3:
-                cout << "Enter account number to transfer to: ";
-                cin >> transferAccount;
-
-                cout << "Enter amount to transfer: ";
-                if (!(cin >> amount)) {
-                    cout << "Invalid amount!" << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    break;
-                }
-
-                if (isfinite(amount) && amount > 0 && amount <= balance
-                    && transferAccount != accountNumber) {
-                    balance -= amount;
-                    cout << "Transfer successful!" << endl;
-                    cout << "Money sent to account "
-                         << transferAccount << endl;
-                } else {
-                    cout << "Transfer failed!" << endl;
-                }
-                break;
-
-            case 4:
-                cout << "Your current balance is: "
-                     << fixed << setprecision(2) << balance << endl;
-                break;
-
-            case 5:
-                cout << "Thank you for using Mini Bank!" << endl;
-                return 0;
-
-            default:
-                cout << "Invalid choice! Try again." << endl;
-        }
-    }
+    session.nextAction();
 
     return 0;
 }
