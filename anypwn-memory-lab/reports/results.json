@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-10-25T05:40:35.357750+00:00",
+  "tests": [
+    {
+      "name": "small_valid",
+      "payload_length": 100,
+      "vulnerable": {
+        "exit_code": 0,
+        "asan_detected": false,
+        "output": "[VULNERABLE] Declared length: 100\n[VULNERABLE] Allocation length: 100\n[VULNERABLE] Copy length: 100\n[VULNERABLE] Copy completed\n"
+      },
+      "patched": {
+        "exit_code": 0,
+        "asan_detected": false,
+        "output": "[PATCHED] Accepted payload: 100 bytes\n[PATCHED] Copy completed safely\n"
+      }
+    },
+    {
+      "name": "maximum_16bit",
+      "payload_length": 65535,
+      "vulnerable": {
+        "exit_code": 0,
+        "asan_detected": false,
+        "output": "[VULNERABLE] Declared length: 65535\n[VULNERABLE] Allocation length: 65535\n[VULNERABLE] Copy length: 65535\n[VULNERABLE] Copy completed\n"
+      },
+      "patched": {
+        "exit_code": 0,
+        "asan_detected": false,
+        "output": "[PATCHED] Accepted payload: 65535 bytes\n[PATCHED] Copy completed safely\n"
+      }
+    },
+    {
+      "name": "truncation_boundary",
+      "payload_length": 65536,
+      "vulnerable": {
+        "exit_code": -6,
+        "asan_detected": true,
+        "output": "[VULNERABLE] Declared length: 65536\n[VULNERABLE] Allocation length: 1\n[VULNERABLE] Copy length: 65536\n=================================================================\n==1911254==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000011 at pc 0x7a3d102fb303 bp 0x7ffdc2d8f7e0 sp 0x7ffdc2d8ef88\nWRITE of size 65536 at 0x502000000011 thread T0\n    #0 0x7a3d102fb302 in memcpy ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115\n    #1 0x56f65f36b606 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:70\n    #2 0x56f65f36ba45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x7a3d0f62a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x7a3d0f62a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x56f65f36b344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\n0x502000000011 is located 0 bytes after 1-byte region [0x502000000010,0x502000000011)\nallocated by thread T0 here:\n    #0 0x7a3d102fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x56f65f36b511 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:44\n    #2 0x56f65f36ba45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x7a3d0f62a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x7a3d0f62a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x56f65f36b344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115 in memcpy\nShadow bytes around the buggy address:\n  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x502000000000: fa fa[01]fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1911254==ABORTING\n"
+      },
+      "patched": {
+        "exit_code": 1,
+        "asan_detected": false,
+        "output": "[PATCHED] Rejected oversized payload: 65536\n"
+      }
+    },
+    {
+      "name": "heap_overflow",
+      "payload_length": 65540,
+      "vulnerable": {
+        "exit_code": -6,
+        "asan_detected": true,
+        "output": "[VULNERABLE] Declared length: 65540\n[VULNERABLE] Allocation length: 4\n[VULNERABLE] Copy length: 65540\n=================================================================\n==1911265==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000014 at pc 0x7160914fb303 bp 0x7ffc3c1fc6e0 sp 0x7ffc3c1fbe88\nWRITE of size 65540 at 0x502000000014 thread T0\n    #0 0x7160914fb302 in memcpy ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115\n    #1 0x56e2da63f606 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:70\n    #2 0x56e2da63fa45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x71609082a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x71609082a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x56e2da63f344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\n0x502000000014 is located 0 bytes after 4-byte region [0x502000000010,0x502000000014)\nallocated by thread T0 here:\n    #0 0x7160914fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x56e2da63f511 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:44\n    #2 0x56e2da63fa45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x71609082a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x71609082a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x56e2da63f344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115 in memcpy\nShadow bytes around the buggy address:\n  0x501ffffffd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501ffffffe80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x501fffffff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x502000000000: fa fa[04]fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000100: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000180: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000200: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x502000000280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1911265==ABORTING\n"
+      },
+      "patched": {
+        "exit_code": 1,
+        "asan_detected": false,
+        "output": "[PATCHED] Rejected oversized payload: 65540\n"
+      }
+    },
+    {
+      "name": "larger_payload",
+      "payload_length": 70000,
+      "vulnerable": {
+        "exit_code": -6,
+        "asan_detected": true,
+        "output": "[VULNERABLE] Declared length: 70000\n[VULNERABLE] Allocation length: 4464\n[VULNERABLE] Copy length: 70000\n=================================================================\n==1911273==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x521000001270 at pc 0x7b437e6fb303 bp 0x7ffd78c71930 sp 0x7ffd78c710d8\nWRITE of size 70000 at 0x521000001270 thread T0\n    #0 0x7b437e6fb302 in memcpy ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115\n    #1 0x556b1afda606 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:70\n    #2 0x556b1afdaa45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x7b437da2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x7b437da2a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x556b1afda344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\n0x521000001270 is located 0 bytes after 4464-byte region [0x521000000100,0x521000001270)\nallocated by thread T0 here:\n    #0 0x7b437e6fd9c7 in malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:69\n    #1 0x556b1afda511 in process_packet /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:44\n    #2 0x556b1afdaa45 in main /home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/src/vulnerable.c:100\n    #3 0x7b437da2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x7b437da2a28a in __libc_start_main_impl ../csu/libc-start.c:360\n    #5 0x556b1afda344 in _start (/home/jackal/Jackal-Arcanum/Jackal-Citadel/anypwn-memory-lab/build/vulnerable+0x2344) (BuildId: 8a9bff94a8c316ab6a131e507e945534ad791786)\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors_memintrinsics.inc:115 in memcpy\nShadow bytes around the buggy address:\n  0x521000000f80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x521000001000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x521000001080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x521000001100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x521000001180: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x521000001200: 00 00 00 00 00 00 00 00 00 00 00 00 00 00[fa]fa\n  0x521000001280: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x521000001300: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x521000001380: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x521000001400: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x521000001480: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n==1911273==ABORTING\n"
+      },
+      "patched": {
+        "exit_code": 1,
+        "asan_detected": false,
+        "output": "[PATCHED] Rejected oversized payload: 70000\n"
+      }
+    }
+  ]
+}
