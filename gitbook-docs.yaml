@@ -1,0 +1,19 @@
+$schema: https://api.gitbook.com/gitbook-docs.yaml
+
+site:
+  title: Jackal Citadel
+
+  structure:
+    - type: section
+      key: citadel
+      title: Jackal Citadel
+      path: .
+      default: true
+      children:
+        - type: space
+          key: citadel-docs
+          title: Documentation
+          path: .
+          default: true
+          content:
+            directory: .
